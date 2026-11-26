@@ -15,6 +15,11 @@ JBL's own app only runs on phones. FlexBar talks to the earbuds directly over Bl
 
 - **Battery** for the left earbud, right earbud and case, refreshed every minute.
 - **Noise mode:** Noise Cancelling, Ambient Aware, TalkThru or Off. A mode is only shown as active once the earbuds confirm it. If they don't confirm within 3 seconds, the panel says so.
+- **Noise mode details:** adaptive noise cancelling on or off, and the Ambient Aware level (7 steps).
+- **Sound effect:** Natural, Treble Boost or Bass Boost.
+- **Smart Audio & Video:** Normal, Audio (higher quality for music) or Video (lower latency for video and calls).
+- **Find My Buds:** make the left or right earbud beep.
+- **Low battery alerts:** a notification when an earbud reaches 20% and again at 10%. Can be turned off in the gear menu.
 - **Connect card:** each time the earbuds connect, a card drops down from the menu bar icon for 4 seconds with battery rings and the active mode.
 - **Live updates:** changing the mode with the touch controls on the earbuds updates the menu bar icon and the panel right away.
 - **Reconnects by itself** when the earbuds come back in range or leave the case.
@@ -89,9 +94,8 @@ Add `--snapshot /tmp/panel.png` to save the panel and the connect card as PNGs (
 ## Known limits
 
 - Only tested with the JBL Tune Flex 2. Other JBL earbuds built on the same platform (the JBL app lists Vibe Flex 2, Wave Flex 2, Tune Buds 2 and Tune Beam 2 in the same family) may work with small changes, but haven't been tried.
-- The first byte of each battery value is assumed to be a charging flag (shown as ⚡︎). This hasn't been confirmed yet.
 - While FlexBar is connected, the JBL app on your phone may not be able to connect to the earbuds.
-- EQ, touch-control settings and the other options in the JBL app aren't supported yet. Their commands are in the JBL app's code; see [docs/PROTOCOL.md](docs/PROTOCOL.md).
+- Custom EQ, touch-control settings and the other options in the JBL app aren't supported yet. Their commands are in the JBL app's code; see [docs/PROTOCOL.md](docs/PROTOCOL.md).
 
 ## Contributing
 
@@ -99,7 +103,7 @@ Issues and pull requests are welcome, especially:
 
 - **Translations.** All UI text lives in [Resources/translations.py](Resources/translations.py). Edit it and run `python3 Resources/translations.py` to regenerate the `.strings` files. The non-Turkish translations haven't been reviewed by native speakers yet.
 - **Other models.** If you have another JBL earbud and can test, please open an issue.
-- **More controls** (EQ, touch controls) from the protocol notes.
+- **More controls** (custom EQ, touch controls) from the protocol notes.
 
 ## Disclaimer
 

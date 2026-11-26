@@ -49,6 +49,38 @@ STRINGS = {
     "Quit FlexBar": ["Quit FlexBar", "FlexBar'dan çık", "FlexBar बंद करें", "FlexBar beenden", "Quitter FlexBar", "Encerrar o FlexBar"],
     "Settings": ["Settings", "Ayarlar", "सेटिंग्स", "Einstellungen", "Réglages", "Ajustes"],
 
+    # Noise mode details
+    "Adaptive Noise Cancelling": ["Adaptive Noise Cancelling", "Uyarlanabilir Gürültü Engelleme", "अडैप्टिव नॉइज़ कैंसलिंग", "Adaptive Geräuschunterdrückung", "Réduction de bruit adaptative", "Cancelamento de ruído adaptativo"],
+    "Adjusts to the noise around you.": ["Adjusts to the noise around you.", "Çevrendeki gürültüye göre ayarlanır.", "आसपास के शोर के हिसाब से बदलता है।", "Passt sich an die Umgebungsgeräusche an.", "S’adapte au bruit ambiant.", "Ajusta-se ao ruído ao seu redor."],
+    "Ambient Aware level": ["Ambient Aware level", "Ambient Aware seviyesi", "Ambient Aware लेवल", "Ambient-Aware-Stufe", "Niveau Ambient Aware", "Nível do Ambient Aware"],
+
+    # Sound effect (short: they sit side by side in a segmented control)
+    "Sound": ["Sound", "Ses", "साउंड", "Klang", "Son", "Som"],
+    "Natural": ["Natural", "Doğal", "नेचुरल", "Natürlich", "Naturel", "Natural"],
+    "Treble Boost": ["Treble Boost", "Tiz", "ट्रेबल", "Höhen", "Aigus", "Agudos"],
+    "Bass Boost": ["Bass Boost", "Bas", "बेस", "Bässe", "Basses", "Graves"],
+
+    # Smart Audio & Video ("Smart Audio & Video" is a JBL feature name)
+    "Smart Audio & Video": ["Smart Audio & Video"] * 6,
+    "Normal": ["Normal", "Normal", "नॉर्मल", "Normal", "Normal", "Normal"],
+    "Audio": ["Audio", "Müzik", "ऑडियो", "Audio", "Audio", "Áudio"],
+    "Video": ["Video", "Video", "वीडियो", "Video", "Vidéo", "Vídeo"],
+    "Balanced quality and latency.": ["Balanced quality and latency.", "Kalite ve gecikme dengeli.", "क्वालिटी और लेटेंसी में संतुलन।", "Ausgewogene Qualität und Latenz.", "Qualité et latence équilibrées.", "Qualidade e latência equilibradas."],
+    "Higher quality for music.": ["Higher quality for music.", "Müzik için daha yüksek kalite.", "संगीत के लिए बेहतर क्वालिटी।", "Höhere Qualität für Musik.", "Meilleure qualité pour la musique.", "Mais qualidade para música."],
+    "Lower latency for video and calls.": ["Lower latency for video and calls.", "Video ve görüşmeler için daha az gecikme.", "वीडियो और कॉल के लिए कम लेटेंसी।", "Geringere Latenz für Videos und Anrufe.", "Latence réduite pour les vidéos et les appels.", "Menos latência para vídeos e chamadas."],
+
+    # Find My Buds
+    "Find My Buds": ["Find My Buds", "Kulaklığı bul", "ईयरबड्स खोजें", "Ohrhörer finden", "Localiser les écouteurs", "Encontrar fones"],
+    "Take the earbuds out first: the beep is loud.": ["Take the earbuds out first: the beep is loud.", "Önce kulaklıkları çıkar: ses yüksek.", "पहले ईयरबड्स निकाल लें: आवाज़ तेज़ है।", "Nimm die Ohrhörer zuerst heraus: Der Ton ist laut.", "Retirez d’abord les écouteurs : le son est fort.", "Tire os fones primeiro: o som é alto."],
+    "Stop": ["Stop", "Durdur", "रोकें", "Stopp", "Arrêter", "Parar"],
+    "Stop beeping %@": ["Stop beeping %@", "%@ sesini durdur", "%@ की आवाज़ रोकें", "Ton stoppen: %@", "Arrêter le son : %@", "Parar som: %@"],
+    "Beep %@": ["Beep %@", "%@ öttür", "%@ में आवाज़ चलाएँ", "Ton abspielen: %@", "Faire sonner : %@", "Tocar som: %@"],
+
+    # Low battery alerts
+    "Low Battery Alerts": ["Low Battery Alerts", "Düşük pil bildirimi", "कम बैटरी अलर्ट", "Warnung bei niedrigem Akku", "Alertes de batterie faible", "Alertas de bateria fraca"],
+    "Left earbud battery is at %@.": ["Left earbud battery is at %@.", "Sol kulaklığın pili %@.", "बाएँ ईयरबड की बैटरी %@ है।", "Der linke Ohrhörer hat noch %@ Akku.", "La batterie de l’écouteur gauche est à %@.", "A bateria do fone esquerdo está em %@."],
+    "Right earbud battery is at %@.": ["Right earbud battery is at %@.", "Sağ kulaklığın pili %@.", "दाएँ ईयरबड की बैटरी %@ है।", "Der rechte Ohrhörer hat noch %@ Akku.", "La batterie de l’écouteur droit est à %@.", "A bateria do fone direito está em %@."],
+
     # Connect card
     "Connected": ["Connected", "Bağlandı", "कनेक्ट हो गया", "Verbunden", "Connecté", "Conectado"],
     "Active mode": ["Active mode", "Etkin mod", "सक्रिय मोड", "Aktiver Modus", "Mode actif", "Modo ativo"],

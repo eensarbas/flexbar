@@ -50,7 +50,7 @@ AA 06 <length LE16> <type> <feature ID BE16>…
 
 `type` is `01` for a read request and `02` for a reply. In a reply, each feature is `<ID BE16> <length, 1 byte> <value>`. The full status frame the earbuds push on connect parses cleanly with this rule.
 
-Battery values are 2 bytes, `<status> <percent>`, for example `00 64`. The first byte is probably a charging flag; this hasn't been confirmed.
+Battery values are 2 bytes, `<charging> <percent>`, for example `00 64`. The JBL app stores the first byte as the charging flag (`DeviceUnitBatteryInfo.setCharging`).
 
 ## Read commands (tested)
 
@@ -75,10 +75,59 @@ From `HmProtocol3DeviceStatusControl.setAncSetting` → `CmdGen.genSetANCModes` 
 | Off | `AA 91 01 13` | `AA 91 07 12 01 00 02 00 03 00` ✓ |
 | Ambient Aware | `AA 91 07 10 01 00 02 01 03 00` | `AA 91 07 12 01 00 02 01 03 00` ✓ |
 
-Every mode report is followed by `AA 91 09 22 01 01 04 07 05 01 A1 06`. Its value didn't change between modes; it's probably the ANC sub-settings. Not decoded yet.
+Every mode report is followed by the advanced ANC report `AA 91 09 22 …`, described below.
+
+## More settings (tested)
+
+All of these were read, changed and restored on real earbuds. After each write the earbuds report the new value by themselves.
+
+### Advanced ANC: adaptive ANC and Ambient Aware level
+
+`AdvancedAncCmd`. Read with `AA 91 01 21`; the reply is key/value pairs after `22`:
+
+```
+AA 91 09 22  01 01  04 07  05 01  A1 06
+             │      │      │      └ A1 Ambient Aware level (0–6)
+             │      │      └ 05 leakage compensation
+             │      └ 04 manual adaptive ANC level
+             └ 01 adaptive ANC on (1) / off (0)
+```
+
+| Change | Sent |
+|---|---|
+| Adaptive ANC off / on | `AA 91 03 20 01 00` / `AA 91 03 20 01 01` |
+| Ambient Aware level 3 | `AA 91 03 20 A1 03` |
+
+The JBL app shows 7 Ambient Aware steps. The earbuds accepted 3 and 6; they ignored 7, so the range is 0–6.
+
+### Sound effect
+
+Feature `0x14` in the feature-list frames (`SoundEffectInfo`): value `<status> <type>`, type `00` Natural, `01` Treble Boost, `02` Bass Boost.
+
+| Change | Sent |
+|---|---|
+| Read | `AA 06 03 00 01 00 14` → `AA 06 06 00 02 00 14 02 00 00` |
+| Treble Boost | `AA 06 06 00 00 00 14 02 01 01` (status `01`, as the JBL app sends) |
+
+### Smart Audio & Video
+
+`SmartSwitchCmd`, command `0x80`. Values are little-endian 16-bit: AAC bitrate (kbps), SBC bitpool, latency (ms), and a second latency the earbuds report as `FFFF`.
+
+| | AAC | SBC | Latency | Sent |
+|---|---|---|---|---|
+| Read | | | | `AA 80 01 01` → `AA 80 09 02 00 01 2E 00 18 01 FF FF` |
+| Normal | 197 | 46 | 280 | `AA 80 09 00 C5 00 2E 00 18 01 FF FF` |
+| Audio | 256 | 46 | 280 | `AA 80 09 00 00 01 2E 00 18 01 FF FF` |
+| Video | 197 | 46 | 120 | `AA 80 09 00 C5 00 2E 00 78 00 FF FF` |
+
+The three profiles come from the JBL app's product list for the Tune Flex 2.
+
+### Find My Buds
+
+`BeepingCmd`, command `0x23`. Read with `AA 23 01 01` → `AA 23 03 02 <left> <right>` (1 = beeping). To change: `AA 23 03 00 <left> <right>` with `01` beep, `00` stop, `FF` leave as is. The read was tested; the beep itself hasn't been triggered from the Mac yet.
 
 ## Not implemented yet: where to look in the app
 
-- EQ: `TuneFlex2Control.setEQSettings2` → `EQControl` (`QMultiply10EQ`). Gain range ±6 dB. Presets: NATURAL, INCREASED TREBLE, INCREASED BASS.
+- Custom EQ: `TuneFlex2Control.setEQSettings2` → `EQControl` (`QMultiply10EQ`). Gain range ±6 dB.
 - Touch controls: `customizedGesture` in `product_list.json`, `CommandHeader.HEADER_FOR_SET_GESTURE_CONTROL` (`AA 71`).
 - Other settings, all in `TuneFlex2Control`: `getAudioLimiterStatus`, `getAutoStandbyModeList`, `getLRBalanceStatus`, `getFindMyBuds`, `getInEarStatus`.

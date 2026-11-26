@@ -16,6 +16,7 @@ struct FlexBarApp: App {
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let client = FlexClient()
     private var statusItem: StatusItemController?
+    private var lowBatteryAlerts: LowBatteryAlerts?
     private var logSubscriptions: Set<AnyCancellable> = []
 
     func applicationWillFinishLaunching(_ notification: Notification) {
@@ -26,7 +27,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// `--log` prints state changes to stdout (open -n FlexBar.app --stdout log.txt --args --log).
     func applicationDidFinishLaunching(_ notification: Notification) {
-        statusItem = MainActor.assumeIsolated { StatusItemController(client: client) }
+        Preference.registerDefaults()
+        MainActor.assumeIsolated {
+            statusItem = StatusItemController(client: client)
+            lowBatteryAlerts = LowBatteryAlerts(client: client)
+        }
         if CommandLine.arguments.contains("--show-panel") {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                 MainActor.assumeIsolated { self?.statusItem?.showPanel() }
@@ -42,6 +47,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             .sink { l, r, c in print("battery: L \(l?.percent ?? -1) R \(r?.percent ?? -1) case \(c?.percent ?? -1)") }
             .store(in: &logSubscriptions)
         client.$firmware.sink { print("firmware:", $0 ?? "-") }.store(in: &logSubscriptions)
+        client.$adaptiveANC.combineLatest(client.$ambientLevel, client.$soundEffect, client.$smartAV)
+            .sink { a, l, e, s in print("settings: adaptive \(a.map(String.init) ?? "-") ambient \(l.map(String.init) ?? "-") effect \(e.map { "\($0)" } ?? "-") smartAV \(s.map { "\($0)" } ?? "-")") }
+            .store(in: &logSubscriptions)
+        client.$beeping.sink { print("beeping: L \($0.left) R \($0.right)") }.store(in: &logSubscriptions)
         client.$lastError.sink { if let e = $0 { print("error:", e) } }.store(in: &logSubscriptions)
     }
 
