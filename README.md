@@ -30,13 +30,30 @@ JBL's own app only runs on phones. FlexBar talks to the earbuds directly over Bl
 
 ## Requirements
 
-- macOS 13 Ventura or later, on Apple silicon.
-- Xcode Command Line Tools, to build it: `xcode-select --install`.
+- macOS 13 Ventura or later. Built for both Apple silicon and Intel; tested on Apple silicon.
 - JBL Tune Flex 2 earbuds, paired with the Mac.
 
 ## Install
 
-There's no prebuilt download yet; build it from source:
+1. Download **FlexBar.zip** from the [latest release](https://github.com/eensarbas/flexbar/releases/latest).
+2. Unzip it and drag **FlexBar** into your **Applications** folder.
+3. Open FlexBar. It isn't signed by Apple yet, so macOS blocks the first launch:
+   - **macOS 15 Sequoia and later:** macOS says FlexBar wasn't opened. Click **Done**, then open **System Settings › Privacy & Security**, scroll down to **Security** and click **Open Anyway** next to FlexBar. Enter your password and click **Open Anyway** again.
+   - **macOS 13 and 14:** right-click FlexBar in Applications, choose **Open**, then click **Open**.
+
+   You only need to do this once.
+4. When macOS asks for Bluetooth access, click **Allow**.
+5. To start FlexBar with your Mac, click its menu bar icon and turn on **Open at Login** in the gear menu.
+
+If you prefer Terminal, this clears the download flag instead of step 3:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/FlexBar.app
+```
+
+### Build from source
+
+You need the Xcode Command Line Tools (`xcode-select --install`).
 
 ```bash
 git clone https://github.com/eensarbas/flexbar.git
@@ -46,9 +63,11 @@ git clone https://github.com/eensarbas/flexbar.git
 cd flexbar && ./build.sh --install
 ```
 
-This builds the app, copies it to `/Applications` and starts it. On first launch macOS asks for Bluetooth access: click **Allow**. To start FlexBar with your Mac, open the panel and turn on **Open at Login** in the gear menu.
+This builds the app, copies it to `/Applications` and starts it. `./build.sh --release` makes the same universal `build/FlexBar.zip` that the releases use. The app is ad-hoc signed, so macOS may ask for Bluetooth access again after you rebuild it.
 
-The app is ad-hoc signed, so macOS may ask for Bluetooth access again after you rebuild it.
+### Releases
+
+Pushing a tag like `v0.2.0` makes GitHub Actions build the universal app and publish it as a release ([workflow](.github/workflows/release.yml)). Pull requests get the same build as a downloadable artifact.
 
 ## How it works
 

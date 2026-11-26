@@ -24,7 +24,27 @@ open flexbar://anc
 
 ## Kurulum
 
-Apple silicon işlemcili bir Mac, macOS 13 veya üstü ve Xcode Command Line Tools gerekir.
+macOS 13 veya üstü gerekir. Uygulama hem Apple silicon hem Intel için derleniyor; Apple silicon'da test edildi.
+
+1. [Son sürümden](https://github.com/eensarbas/flexbar/releases/latest) **FlexBar.zip** dosyasını indir.
+2. Zip'i aç, **FlexBar**'ı **Uygulamalar** klasörüne sürükle.
+3. FlexBar'ı aç. Uygulama henüz Apple tarafından imzalanmadığı için macOS ilk açılışı engeller:
+   - **macOS 15 Sequoia ve sonrası:** macOS, FlexBar'ın açılmadığını söyler. **Bitti**'ye tıkla, sonra **Sistem Ayarları › Gizlilik ve Güvenlik**'i aç, aşağıdaki **Güvenlik** bölümünde FlexBar'ın yanındaki **Yine de Aç**'a tıkla. Parolanı gir ve tekrar **Yine de Aç**'a tıkla.
+   - **macOS 13 ve 14:** Uygulamalar klasöründe FlexBar'a sağ tıkla, **Aç**'ı seç, sonra yine **Aç**'a tıkla.
+
+   Bunu yalnızca bir kez yapman gerekir.
+4. macOS Bluetooth izni isteyince **İzin Ver**'e tıkla.
+5. Mac açılınca kendiliğinden başlaması için menü çubuğundaki ikona tıkla, dişli menüsünden **Girişte aç**'ı işaretle.
+
+Terminal'i tercih edersen 3. adım yerine bu komut indirme işaretini kaldırır:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/FlexBar.app
+```
+
+### Kaynak koddan derleme
+
+Xcode Command Line Tools gerekir (`xcode-select --install`).
 
 ```bash
 git clone https://github.com/eensarbas/flexbar.git
@@ -34,9 +54,7 @@ git clone https://github.com/eensarbas/flexbar.git
 cd flexbar && ./build.sh --install
 ```
 
-Bu komut uygulamayı derler, `/Applications` klasörüne kopyalar ve başlatır. Yalnızca `./build.sh` çalıştırırsan uygulama `build/FlexBar.app` olarak derlenir.
-
-İlk açılışta macOS Bluetooth izni ister, **İzin Ver**'e tıkla. Mac açılınca kendiliğinden başlaması için paneldeki dişli menüsünden **Girişte aç**'ı işaretle. Uygulama ad-hoc imzalı olduğu için her yeniden derlemede bu izin tekrar sorulabilir.
+Bu komut uygulamayı derler, `/Applications` klasörüne kopyalar ve başlatır. `./build.sh --release`, sürümlerde kullanılan evrensel `build/FlexBar.zip` dosyasını üretir. Uygulama ad-hoc imzalı olduğu için her yeniden derlemede Bluetooth izni tekrar sorulabilir.
 
 ## Nasıl çalışır
 
