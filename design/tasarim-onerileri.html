@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FlexBar Tasarımları</title>
+<style>
+  :root {
+    --desk: #23262e;
+    --panel: rgba(38, 39, 44, 0.94);
+    --panel-line: rgba(255, 255, 255, 0.09);
+    --inset: rgba(255, 255, 255, 0.055);
+    --inset-line: rgba(255, 255, 255, 0.07);
+    --text: #f2f2f4;
+    --muted: rgba(235, 235, 245, 0.58);
+    --faint: rgba(235, 235, 245, 0.32);
+    --ok: #32d74b;
+    --blue: #0a84ff;
+    --orange: #ff5a1f;
+    --world: #f2b84b;
+    --silence: #6f7bff;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--desk);
+    color: var(--text);
+    font: 13px/1.4 var(--font);
+    -webkit-font-smoothing: antialiased;
+  }
+  .intro { max-width: 1120px; margin: 0 auto; padding: 40px 16px 8px; }
+  .intro h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 8px; }
+  .intro p { color: var(--muted); max-width: 62ch; margin: 0; font-size: 14px; }
+
+  .options {
+    max-width: 1120px; margin: 0 auto; padding: 24px 16px 56px;
+    display: grid; gap: 28px;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    align-items: start;
+  }
+  .option h2 { font-size: 16px; font-weight: 600; margin: 0 0 4px; }
+  .option > p { color: var(--muted); margin: 0 0 14px; font-size: 13px; max-width: 46ch; }
+
+  /* Fake menu bar strip with the live status icon */
+  .menubar {
+    height: 28px; border-radius: 8px 8px 0 0;
+    background: rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: flex-end; gap: 14px;
+    padding: 0 12px; color: var(--muted); font-size: 12px;
+  }
+  .menubar .live { color: var(--text); display: grid; place-items: center; width: 26px; height: 22px; border-radius: 5px; background: rgba(255,255,255,0.16); }
+  .menubar svg { width: 15px; height: 15px; }
+
+  .panel {
+    width: 100%; max-width: 340px; margin: 8px 0 0 auto;
+    background: var(--panel);
+    border: 1px solid var(--panel-line);
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+    backdrop-filter: blur(30px);
+  }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  .icon { width: 18px; height: 18px; flex: none; }
+
+  /* ---------- 1: Sakin ---------- */
+  .s-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .s-head .badge { width: 34px; height: 34px; border-radius: 9px; background: var(--inset); display: grid; place-items: center; }
+  .s-head strong { display: block; font-size: 14px; font-weight: 600; }
+  .s-head span { color: var(--muted); font-size: 12px; display: flex; align-items: center; gap: 6px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+  .group { background: var(--inset); border: 1px solid var(--inset-line); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; }
+  .bat-row { display: grid; grid-template-columns: 44px 1fr 38px; align-items: center; gap: 10px; padding: 4px 0; }
+  .bat-row span:first-child { color: var(--muted); }
+  .bat-row span:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+  .bar { height: 5px; border-radius: 3px; background: rgba(255,255,255,0.1); overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--text); border-radius: 3px; }
+  .seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; background: rgba(0,0,0,0.25); border-radius: 9px; padding: 2px; }
+  .seg button { border: 0; background: transparent; border-radius: 7px; padding: 8px 2px 6px; display: grid; justify-items: center; gap: 4px; font-size: 11px; color: var(--muted); cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--blue); color: #fff; }
+  .seg-title { color: var(--muted); font-size: 12px; margin: 0 0 8px; }
+  .row { display: flex; justify-content: space-between; align-items: center; }
+  .switch { width: 34px; height: 20px; border-radius: 10px; border: 0; background: rgba(255,255,255,0.18); position: relative; cursor: pointer; padding: 0; }
+  .switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .15s; }
+  .switch[aria-checked="true"] { background: var(--ok); }
+  .switch[aria-checked="true"]::after { transform: translateX(14px); }
+  .foot { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .foot button { border: 1px solid var(--inset-line); background: var(--inset); border-radius: 8px; padding: 7px; cursor: pointer; }
+
+  /* ---------- 2: Nesne ---------- */
+  .o-stage { display: grid; grid-template-columns: 1fr 1.3fr 1fr; align-items: end; gap: 6px; padding: 8px 4px 14px; text-align: center; }
+  .o-stage svg { width: 100%; height: 92px; display: block; overflow: visible; }
+  .o-stage b { display: block; font-size: 18px; font-weight: 600; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .o-stage small { color: var(--muted); font-size: 11px; }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tiles button {
+    text-align: left; border: 1px solid var(--inset-line); background: var(--inset);
+    border-radius: 12px; padding: 11px 11px 10px; cursor: pointer; display: grid; gap: 6px;
+  }
+  .tiles button strong { font-size: 13px; font-weight: 600; }
+  .tiles button span { color: var(--muted); font-size: 11.5px; line-height: 1.3; }
+  .tiles button[aria-pressed="true"] { background: var(--orange); border-color: var(--orange); }
+  .tiles button[aria-pressed="true"] span { color: rgba(255,255,255,0.85); }
+  .o-foot { display: flex; justify-content: space-between; color: var(--faint); font-size: 11.5px; margin-top: 12px; padding: 0 2px; }
+
+  /* ---------- 3: Spektrum ---------- */
+  .p-now { padding: 4px 2px 16px; }
+  .p-now small { color: var(--muted); font-size: 12px; }
+  .p-now strong { display: block; font-size: 28px; font-weight: 650; letter-spacing: -0.025em; line-height: 1.15; margin-top: 2px; }
+  .p-now span { color: var(--muted); font-size: 12.5px; }
+  .track-wrap { position: relative; padding: 0 9px; margin-bottom: 8px; }
+  .track { height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--world), var(--silence)); opacity: .9; }
+  .thumb { position: absolute; top: -6px; width: 20px; height: 20px; margin-left: -10px; border-radius: 50%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.5); transition: left .25s cubic-bezier(.3,.7,.2,1); }
+  .stops { display: grid; grid-template-columns: repeat(4, 1fr); margin: 0 -2px 6px; }
+  .stops button { border: 0; background: none; padding: 8px 0 4px; cursor: pointer; display: grid; justify-items: center; gap: 4px; color: var(--muted); font-size: 11px; border-radius: 8px; }
+  .stops button[aria-pressed="true"] { color: var(--text); font-weight: 600; }
+  .ends { display: flex; justify-content: space-between; color: var(--faint); font-size: 11px; margin-bottom: 14px; padding: 0 2px; }
+  .p-bat { display: flex; gap: 8px; }
+  .p-bat div { flex: 1; background: var(--inset); border-radius: 9px; padding: 8px 10px; }
+  .p-bat small { color: var(--muted); font-size: 11px; display: block; }
+  .p-bat b { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .note { max-width: 1120px; margin: 0 auto; padding: 0 16px 48px; color: var(--muted); font-size: 13px; }
+  @media (prefers-reduced-motion: reduce) { .thumb, .switch::after { transition: none; } }
+</style>
+</head>
+<body>
+<header class="intro">
+  <h1>FlexBar için üç tasarım</h1>
+  <p>Üçü de aynı veriyi gösteriyor: sol, sağ ve kutu pili ile gürültü modu. Modlara tıklayabilirsin; menü çubuğundaki ikon da değişir. Değerler kulaklıktan son okunanlar.</p>
+</header>
+
+<main class="options">
+
+  <!-- 1 -->
+  <section class="option" data-option="1">
+    <h2>1. Sakin ve tanıdık</h2>
+    <p>Gönderdiğin uygulamaya ve macOS'un kendi kontrol panellerine en yakın olan. Modlar tek satırlık bir segment düğmesinde, piller ince çubuklarda.</p>
+    <div class="menubar"><span>%70</span><span class="live" data-live></span><span>22:25</span></div>
+    <div class="panel">
+      <div class="s-head">
+        <div class="badge" data-icon="buds"></div>
+        <div><strong>JBL Tune Flex 2</strong><span><i class="dot"></i>Bağlı</span></div>
+      </div>
+      <div class="group">
+        <div class="bat-row"><span>Sol</span><div class="bar"><i style="width:97%"></i></div><span>%97</span></div>
+        <div class="bat-row"><span>Sağ</span><div class="bar"><i style="width:97%"></i></div><span>%97</span></div>
+        <div class="bat-row"><span>Kutu</span><div class="bar"><i style="width:71%"></i></div><span>%71</span></div>
+      </div>
+      <div class="group">
+        <p class="seg-title">Gürültü modu</p>
+        <div class="seg" data-modes>
+          <button data-mode="anc"><span data-icon="anc"></span>ANC</button>
+          <button data-mode="ambient"><span data-icon="ambient"></span>Ambient</button>
+          <button data-mode="talkthru"><span data-icon="talkthru"></span>TalkThru</button>
+          <button data-mode="off"><span data-icon="off"></span>Kapalı</button>
+        </div>
+      </div>
+      <div class="group row"><span>Girişte aç</span><button class="switch" role="switch" aria-checked="true" aria-label="Girişte aç"></button></div>
+      <div class="foot"><button>Yenile</button><button>Çık</button></div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="option" data-option="2">
+    <h2>2. Kulaklık önde</h2>
+    <p>Üstte iki kulaklık ve kutu; pil, kulaklıkların sapında turuncu bir göstergeyle, kutuda gerçeğindeki gibi öndeki üç eğik ışıkla görünüyor. Modlar ne yaptıklarını anlatan dört büyük kutucukta. Seçili mod JBL turuncusuyla vurgulanıyor.</p>
+    <div class="menubar"><span>%70</span><span class="live" data-live></span><span>22:25</span></div>
+    <div class="panel">
+      <div class="o-stage">
+        <div><svg viewBox="0 0 60 90" aria-hidden="true" data-fill="97" data-shape="bud"></svg><b>%97</b><small>Sol</small></div>
+        <div><svg viewBox="0 0 90 90" aria-hidden="true" data-fill="71" data-shape="case"></svg><b>%71</b><small>Kutu</small></div>
+        <div><svg viewBox="0 0 60 90" aria-hidden="true" data-fill="97" data-shape="bud" data-flip></svg><b>%97</b><small>Sağ</small></div>
+      </div>
+      <div class="tiles" data-modes>
+        <button data-mode="anc"><span data-icon="anc"></span><strong>Gürültü Engelleme</strong><span>Dışarıdaki sesi keser.</span></button>
+        <button data-mode="ambient"><span data-icon="ambient"></span><strong>Ambient Aware</strong><span>Çevreni duymaya devam edersin.</span></button>
+        <button data-mode="talkthru"><span data-icon="talkthru"></span><strong>TalkThru</strong><span>Müziği kısar, konuşmayı öne çıkarır.</span></button>
+        <button data-mode="off"><span data-icon="off"></span><strong>Kapalı</strong><span>Hiçbir işlem yapılmaz.</span></button>
+      </div>
+      <div class="o-foot"><span>Firmware 3.5.0</span><span>Ayarlar</span></div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="option" data-option="3">
+    <h2>3. Ses spektrumu</h2>
+    <p>Dört mod aslında dışarıdan ne kadar ses geldiğini belirliyor. Bu tasarım onları "dünyayı duy"dan "sessizliğe" uzanan tek bir çizgiye diziyor. Etkin mod büyük yazıyla en üstte.</p>
+    <div class="menubar"><span>%70</span><span class="live" data-live></span><span>22:25</span></div>
+    <div class="panel">
+      <div class="p-now">
+        <small>Şu an</small>
+        <strong data-now-title>Ambient Aware</strong>
+        <span data-now-desc>Çevreni duymaya devam edersin.</span>
+      </div>
+      <div class="track-wrap"><div class="track"></div><div class="thumb" data-thumb></div></div>
+      <div class="stops" data-modes>
+        <button data-mode="talkthru">TalkThru</button>
+        <button data-mode="ambient">Ambient</button>
+        <button data-mode="off">Kapalı</button>
+        <button data-mode="anc">ANC</button>
+      </div>
+      <div class="ends"><span>Dünyayı duy</span><span>Sessizlik</span></div>
+      <div class="p-bat">
+        <div><small>Sol</small><b>%97</b></div>
+        <div><small>Sağ</small><b>%97</b></div>
+        <div><small>Kutu</small><b>%71</b></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<p class="note">Hepsi koyu temada gösterildi. Gerçek uygulama sistem temasını izler; açık temada aynı yerleşim açık renklerle gelir.</p>
+
+<script>
+  const ICONS = {
+    anc: '<path d="M3 12h2M7 8v8M11 5v14M15 8v8M19 11v2" stroke-linecap="round"/><path d="M4 20 20 4" stroke-linecap="round"/>',
+    ambient: '<path d="M8 10a4 4 0 1 1 8 0c0 2.5-2 3.2-2.6 5-.5 1.6-1.4 3-3.2 3A2.4 2.4 0 0 1 8 15.8" stroke-linecap="round"/><path d="M11 10.5a1.5 1.5 0 1 1 2.6 1" stroke-linecap="round"/>',
+    talkthru: '<circle cx="9" cy="8" r="3"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5" stroke-linecap="round"/><path d="M17 7.5c1 1.2 1 3.8 0 5M19.5 5.5c2 2.5 2 6.5 0 9" stroke-linecap="round"/>',
+    off: '<circle cx="12" cy="12" r="7.5"/><path d="M8 16 16 8" stroke-linecap="round"/>',
+    buds: '<path d="M6 5.5a3.5 3.5 0 0 1 3.5 3.5v2A3.5 3.5 0 0 1 6 14.5v4" stroke-linecap="round"/><path d="M18 5.5A3.5 3.5 0 0 0 14.5 9v2a3.5 3.5 0 0 0 3.5 3.5v4" stroke-linecap="round"/>'
+  };
+  const svg = (name) => `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">${ICONS[name]}</svg>`;
+  document.querySelectorAll('[data-icon]').forEach(el => el.innerHTML = svg(el.dataset.icon));
+
+  const MODES = {
+    anc: { title: 'Gürültü Engelleme', desc: 'Dışarıdaki sesi keser.' },
+    ambient: { title: 'Ambient Aware', desc: 'Çevreni duymaya devam edersin.' },
+    talkthru: { title: 'TalkThru', desc: 'Müziği kısar, konuşmayı öne çıkarır.' },
+    off: { title: 'Kapalı', desc: 'Hiçbir işlem yapılmaz.' }
+  };
+
+  // Tune Flex 2 earbuds (graphite body, oval head, silicone tip, stem) and pill-shaped case.
+  // Battery shows as an orange gauge: inside the stem for each earbud, across the front of the case.
+  const LINE = 'rgba(255,255,255,0.22)';
+  function defs(i) {
+    // userSpaceOnUse: head and stem share one gradient, so their join stays invisible.
+    return `<linearGradient id="body${i}" gradientUnits="userSpaceOnUse" x1="0" y1="10" x2="40" y2="90">
+        <stop offset="0" stop-color="#55565d"/><stop offset="1" stop-color="#26272c"/></linearGradient>
+      <linearGradient id="tip${i}" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#8d8e95"/><stop offset="1" stop-color="#5d5e65"/></linearGradient>
+      <linearGradient id="gauge${i}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ff8550"/><stop offset="1" stop-color="#ec4a10"/></linearGradient>`;
+  }
+
+  function earbud(i, level, flip) {
+    // Head and stem share one outline: stroke underneath, solid fill on top hides the inner join.
+    const head = '<ellipse cx="25" cy="24" rx="18" ry="14.5" transform="rotate(-12 25 24)"/>';
+    const stem = '<rect x="15.5" y="28" width="14" height="58" rx="7"/>';
+    const tip = '<ellipse cx="41" cy="30" rx="8" ry="9.5" transform="rotate(35 41 30)"/>';
+    const nozzle = '<ellipse cx="44" cy="33.5" rx="3.2" ry="4" transform="rotate(35 44 33.5)"/>';
+    // Gauge track inside the stem, filled from the bottom.
+    const trackTop = 44, trackBottom = 80, trackH = trackBottom - trackTop;
+    const fillH = trackH * level / 100;
+    const t = flip ? ' transform="translate(58 0) scale(-1 1)"' : '';
+    return `<defs>${defs(i)}</defs>
+      <g${t}>
+        <g fill="url(#tip${i})" stroke="${LINE}" stroke-width="2">${tip}</g>
+        <g fill="rgba(0,0,0,0.45)">${nozzle}</g>
+        <g stroke="${LINE}" stroke-width="2.4" fill="url(#body${i})">${head}${stem}</g>
+        <g fill="url(#body${i})">${head}${stem}</g>
+        <path d="M12 18c3-5 9-7.5 15-7" stroke="rgba(255,255,255,0.32)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <rect x="19.5" y="${trackTop}" width="6" height="${trackH}" rx="3" fill="rgba(0,0,0,0.45)"/>
+        <rect x="19.5" y="${trackBottom - fillH}" width="6" height="${fillH}" rx="3" fill="url(#gauge${i})"/>
+      </g>`;
+  }
+
+  // Matte, near-square case with a rounded base; the lid seam dips toward the front centre.
+  // The three slanted front lights double as the battery gauge (each bar ~ one third).
+  function chargingCase(i, level) {
+    const body = '<path d="M30 28h30c11 0 16 6 16 17v15c0 16-10 26-31 26S14 76 14 60V45c0-11 5-17 16-17Z"/>';
+    const lit = Math.max(level > 0 ? 1 : 0, Math.round(level / 33.4));
+    const bars = [0, 1, 2].map(n => {
+      const x = 38 + n * 5.4;
+      const on = n < lit;
+      return `<path d="M${x + 2.4} 52.5h2.6l-2.4 6h-2.6Z" fill="${on ? `url(#gauge${i})` : 'rgba(255,255,255,0.12)'}"/>`
+        + (on ? `<path d="M${x + 2.4} 52.5h2.6l-2.4 6h-2.6Z" fill="#ff7a45" opacity="0.35" filter="url(#glow${i})"/>` : '');
+    }).join('');
+    return `<defs>${defs(i)}
+        <linearGradient id="case${i}" gradientUnits="userSpaceOnUse" x1="20" y1="28" x2="60" y2="86">
+          <stop offset="0" stop-color="#4a4b52"/><stop offset="1" stop-color="#202125"/></linearGradient>
+        <filter id="glow${i}" x="-2" y="-2" width="5" height="5"><feGaussianBlur stdDeviation="1.6"/></filter>
+        <clipPath id="caseclip${i}">${body}</clipPath></defs>
+      <g stroke="${LINE}" stroke-width="2.4" fill="url(#case${i})">${body}</g>
+      <g clip-path="url(#caseclip${i})">
+        <path d="M10 41.5C26 42 36 44.5 45 46.5 54 44.5 64 42 80 41.5" stroke="rgba(0,0,0,0.6)" stroke-width="1.4" fill="none"/>
+        <path d="M10 43C26 43.5 36 46 45 48 54 46 64 43.5 80 43" stroke="rgba(255,255,255,0.09)" stroke-width="0.8" fill="none"/>
+        <path d="M24 32c6-1.6 14-2 21-2s15 .4 21 2" stroke="rgba(255,255,255,0.25)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+      </g>
+      ${bars}`;
+  }
+
+  document.querySelectorAll('svg[data-shape]').forEach((el, i) => {
+    const level = +el.dataset.fill;
+    el.innerHTML = el.dataset.shape === 'case'
+      ? chargingCase(i, level)
+      : earbud(i, level, el.hasAttribute('data-flip'));
+  });
+
+  function setMode(section, mode) {
+    section.querySelectorAll('[data-modes] button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+    section.querySelector('[data-live]').innerHTML = svg(mode);
+    const title = section.querySelector('[data-now-title]');
+    if (title) {
+      title.textContent = MODES[mode].title;
+      section.querySelector('[data-now-desc]').textContent = MODES[mode].desc;
+      const buttons = [...section.querySelectorAll('[data-modes] button')];
+      const idx = buttons.findIndex(b => b.dataset.mode === mode);
+      section.querySelector('[data-thumb]').style.left = `calc(9px + (100% - 18px) * ${idx / 3})`;
+    }
+  }
+
+  document.querySelectorAll('.option').forEach(section => {
+    setMode(section, 'ambient');
+    section.querySelectorAll('[data-modes] button').forEach(b => b.addEventListener('click', () => setMode(section, b.dataset.mode)));
+    const sw = section.querySelector('.switch');
+    if (sw) sw.addEventListener('click', () => sw.setAttribute('aria-checked', String(sw.getAttribute('aria-checked') !== 'true')));
+  });
+</script>
+</body>
+</html>

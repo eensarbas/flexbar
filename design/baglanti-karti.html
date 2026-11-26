@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bağlantı Kartı</title>
+<style>
+  :root {
+    --desk: #23262e;
+    --panel: rgba(38, 39, 44, 0.95);
+    --panel-line: rgba(255, 255, 255, 0.09);
+    --inset: rgba(255, 255, 255, 0.055);
+    --text: #f2f2f4;
+    --muted: rgba(235, 235, 245, 0.58);
+    --faint: rgba(235, 235, 245, 0.32);
+    --orange: #ff5a1f;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--desk); color: var(--text); font: 13px/1.4 var(--font); -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid #0a84ff; outline-offset: 2px; }
+
+  .intro { max-width: 1120px; margin: 0 auto; padding: 40px 16px 8px; }
+  .intro h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 8px; }
+  .intro p { color: var(--muted); max-width: 64ch; margin: 0; font-size: 14px; }
+
+  .options { max-width: 1120px; margin: 0 auto; padding: 24px 16px 56px; display: grid; gap: 28px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); align-items: start; }
+  .option h2 { font-size: 16px; font-weight: 600; margin: 0 0 4px; }
+  .option > p { color: var(--muted); margin: 0 0 14px; max-width: 46ch; }
+  .replay { border: 1px solid var(--panel-line); background: var(--inset); border-radius: 7px; padding: 4px 10px; cursor: pointer; font-size: 12px; margin-bottom: 12px; }
+
+  /* Desktop strip: menu bar + room for the card to drop into */
+  .desk { position: relative; height: 230px; border-radius: 10px; overflow: hidden; background: rgba(255,255,255,0.025); }
+  .menubar { height: 26px; background: rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: flex-end; gap: 14px; padding: 0 12px; color: var(--muted); font-size: 12px; }
+  .menubar .app { width: 26px; height: 20px; border-radius: 5px; display: grid; place-items: center; color: var(--text); background: rgba(255,255,255,0.18); }
+  .menubar svg { width: 15px; height: 15px; }
+  .anchor { position: absolute; top: 32px; right: 74px; }
+
+  .card { position: absolute; top: 0; right: -60px; }
+  .play .card { animation: drop .32s cubic-bezier(.2,.8,.25,1) both; }
+  @keyframes drop { from { opacity: 0; transform: translateY(-14px) scale(.96); } to { opacity: 1; transform: none; } }
+  .ring-fill { transition: stroke-dashoffset .8s cubic-bezier(.3,.7,.2,1) .18s; }
+
+  .ring-wrap { display: grid; justify-items: center; gap: 4px; }
+  .ring-wrap b { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .ring-wrap small { color: var(--muted); font-size: 11px; margin-top: -3px; }
+
+  /* 1: three rings */
+  .c1 { width: 300px; background: var(--panel); border: 1px solid var(--panel-line); border-radius: 16px; padding: 12px 14px 14px; box-shadow: 0 18px 50px rgba(0,0,0,.45); }
+  .c1 header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .c1 header strong { font-size: 13px; font-weight: 600; }
+  .c1 header span { color: var(--muted); font-size: 12px; }
+  .c1 .row { display: grid; grid-template-columns: repeat(3, 1fr); }
+  /* Option 1 opens like the real popover: centred under the icon, arrow pointing up at it. */
+  #v1 .anchor { right: auto; }
+  #v1 .card { right: auto; left: 0; }
+  #v1 .c1::before {
+    content: ""; position: absolute; top: -7px; left: 50%; width: 14px; height: 14px; margin-left: -7px;
+    background: var(--panel); border-left: 1px solid var(--panel-line); border-top: 1px solid var(--panel-line);
+    transform: rotate(45deg); border-top-left-radius: 3px;
+  }
+  #v1 .desk { height: 290px; }
+  #v1 .menubar { justify-content: center; }  /* keeps the centred card inside the mock desktop */
+
+  /* 2: capsule */
+  .c2 { right: -40px; height: 58px; padding: 0 16px 0 18px; display: flex; align-items: center; gap: 14px; background: rgba(12,12,14,0.97); border-radius: 29px; box-shadow: 0 14px 40px rgba(0,0,0,.5); white-space: nowrap; }
+  .c2 .name { font-size: 12.5px; font-weight: 600; padding-right: 4px; border-right: 1px solid rgba(255,255,255,0.12); margin-right: 2px; padding: 0 12px 0 0; }
+  .c2 .name span { display: block; color: var(--muted); font-size: 11px; font-weight: 400; }
+  .c2 .item { display: flex; align-items: center; gap: 6px; }
+  .c2 .item b { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  /* 3: pair + case + mode */
+  #v3 .desk { height: 290px; }
+  .c3 { width: 290px; background: var(--panel); border: 1px solid var(--panel-line); border-radius: 16px; padding: 14px; box-shadow: 0 18px 50px rgba(0,0,0,.45); overflow: hidden; }
+  .c3 .row { display: grid; grid-template-columns: 1.25fr 1fr; align-items: end; }
+  .c3 .detail { color: var(--faint); font-size: 11px; }
+  .mode { display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 8px 10px; border-radius: 10px; background: var(--inset); }
+  .mode svg { width: 16px; height: 16px; color: var(--orange); }
+  .mode span:last-child { color: var(--muted); margin-left: auto; font-size: 11.5px; }
+  .c3 .timer { position: absolute; left: 0; bottom: 0; height: 2px; background: var(--orange); width: 100%; transform-origin: left; }
+  .play .c3 .timer { animation: countdown 4s linear .3s both; }
+  @keyframes countdown { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+  .note { max-width: 1120px; margin: 0 auto; padding: 0 16px 48px; color: var(--muted); max-width: 80ch; }
+  @media (prefers-reduced-motion: reduce) {
+    .play .card { animation: none; }
+    .ring-fill { transition: none; }
+    .play .c3 .timer { animation: none; }
+  }
+</style>
+</head>
+<body>
+<header class="intro">
+  <h1>Bağlantı kartı için üç seçenek</h1>
+  <p>Kulaklık Mac'e bağlandığı anda menü çubuğundaki FlexBar ikonunun altından açılır, birkaç saniye sonra kendiliğinden kapanır. Halkalar AirPods'taki gibi pil oranında dolar. "Tekrar oynat" ile açılışı yeniden izleyebilirsin.</p>
+</header>
+
+<main class="options">
+  <section class="option" id="v1">
+    <h2>1. Üç halka ve mod (seçilen)</h2>
+    <p>Sol, kutu ve sağ kendi halkalarında; altta 3. seçenekteki gibi etkin gürültü modu. Kart, panel gibi ikonun altında ortalanmış ve okla açılıyor.</p>
+    <button class="replay">Tekrar oynat</button>
+    <div class="desk">
+      <div class="menubar"><span>%70</span><span class="app" data-mode-icon></span><span>Per 22:25</span></div>
+      <div class="anchor">
+        <div class="card c1">
+          <header><strong>JBL Tune Flex 2</strong><span>Bağlandı</span></header>
+          <div class="row">
+            <div class="ring-wrap" data-ring="bud" data-level="97"><b>%97</b><small>Sol</small></div>
+            <div class="ring-wrap" data-ring="case" data-level="71"><b>%71</b><small>Kutu</small></div>
+            <div class="ring-wrap" data-ring="bud" data-level="97" data-flip><b>%97</b><small>Sağ</small></div>
+          </div>
+          <div class="mode"><span data-icon="anc"></span>Gürültü Engelleme<span>Etkin mod</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="option" id="v2">
+    <h2>2. Kapsül</h2>
+    <p>Menü çubuğunun hemen altına inen ince, siyah bir kapsül. Ekranda en az yeri kaplıyor; bir bakışta üç değeri gösterip çekiliyor.</p>
+    <button class="replay">Tekrar oynat</button>
+    <div class="desk">
+      <div class="menubar"><span>%70</span><span class="app" data-mode-icon></span><span>Per 22:25</span></div>
+      <div class="anchor">
+        <div class="card c2">
+          <div class="name">Flex 2<span>Bağlandı</span></div>
+          <div class="item"><span data-ring="bud" data-level="97" data-size="38"></span><b>%97</b></div>
+          <div class="item"><span data-ring="bud" data-level="97" data-size="38" data-flip></span><b>%97</b></div>
+          <div class="item"><span data-ring="case" data-level="71" data-size="38"></span><b>%71</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="option" id="v3">
+    <h2>3. Çift ve kutu</h2>
+    <p>Sol ve sağ çoğunlukla aynı seviyede olduğu için tek halkada birlikte duruyor; fark açılırsa altında ayrı yazıyor. Altta etkin gürültü modu ve kartın ne zaman kapanacağını gösteren ince bir çizgi var.</p>
+    <button class="replay">Tekrar oynat</button>
+    <div class="desk">
+      <div class="menubar"><span>%70</span><span class="app" data-mode-icon></span><span>Per 22:25</span></div>
+      <div class="anchor">
+        <div class="card c3">
+          <div class="row">
+            <div class="ring-wrap" data-ring="pair" data-level="97" data-size="104"><b>%97</b><small>Kulaklıklar</small></div>
+            <div class="ring-wrap" data-ring="case" data-level="71" data-size="84"><b>%71</b><small>Kutu</small></div>
+          </div>
+          <div class="mode"><span data-icon="anc"></span>Gürültü Engelleme<span>JBL Tune Flex 2</span></div>
+          <div class="timer"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<p class="note">Halka rengi her yerde aynı turuncu. Pil %20'nin altına inerse halka kırmızıya dönebilir, kulaklık şarj oluyorsa halkanın yanında şimşek çıkar. Bunları seçtiğin tasarıma eklerim.</p>
+
+<script>
+  const LINE = 'rgba(255,255,255,0.22)';
+  let uid = 0;
+  const defs = (i) => `<linearGradient id="body${i}" gradientUnits="userSpaceOnUse" x1="0" y1="10" x2="40" y2="90">
+      <stop offset="0" stop-color="#55565d"/><stop offset="1" stop-color="#26272c"/></linearGradient>
+    <linearGradient id="tip${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8d8e95"/><stop offset="1" stop-color="#5d5e65"/></linearGradient>
+    <linearGradient id="case${i}" gradientUnits="userSpaceOnUse" x1="20" y1="28" x2="60" y2="86"><stop offset="0" stop-color="#4a4b52"/><stop offset="1" stop-color="#202125"/></linearGradient>`;
+
+  // Earbud and case drawings from tasarim-onerileri.html, without their own gauges:
+  // the ring around them carries the battery level here.
+  function earbud(flip) {
+    const i = uid++;
+    const head = '<ellipse cx="25" cy="24" rx="18" ry="14.5" transform="rotate(-12 25 24)"/>';
+    const stem = '<rect x="15.5" y="28" width="14" height="58" rx="7"/>';
+    const tip = '<ellipse cx="41" cy="30" rx="8" ry="9.5" transform="rotate(35 41 30)"/>';
+    const nozzle = '<ellipse cx="44" cy="33.5" rx="3.2" ry="4" transform="rotate(35 44 33.5)"/>';
+    const t = flip ? ' transform="translate(58 0) scale(-1 1)"' : '';
+    return `<defs>${defs(i)}</defs><g${t}>
+      <g fill="url(#tip${i})" stroke="${LINE}" stroke-width="2">${tip}</g>
+      <g fill="rgba(0,0,0,0.45)">${nozzle}</g>
+      <g stroke="${LINE}" stroke-width="2.4" fill="url(#body${i})">${head}${stem}</g>
+      <g fill="url(#body${i})">${head}${stem}</g>
+      <path d="M12 18c3-5 9-7.5 15-7" stroke="rgba(255,255,255,0.32)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </g>`;
+  }
+  function chargingCase() {
+    const i = uid++;
+    const body = '<path d="M30 28h30c11 0 16 6 16 17v15c0 16-10 26-31 26S14 76 14 60V45c0-11 5-17 16-17Z"/>';
+    return `<defs>${defs(i)}<clipPath id="cc${i}">${body}</clipPath></defs>
+      <g stroke="${LINE}" stroke-width="2.4" fill="url(#case${i})">${body}</g>
+      <g clip-path="url(#cc${i})">
+        <path d="M10 41.5C26 42 36 44.5 45 46.5 54 44.5 64 42 80 41.5" stroke="rgba(0,0,0,0.6)" stroke-width="1.4" fill="none"/>
+        <path d="M24 32c6-1.6 14-2 21-2s15 .4 21 2" stroke="rgba(255,255,255,0.25)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+      </g>
+      ${[0, 1, 2].map(n => { const x = 38 + n * 5.4; return `<path d="M${x + 2.4} 52.5h2.6l-2.4 6h-2.6Z" fill="rgba(255,255,255,0.75)"/>`; }).join('')}`;
+  }
+
+  const R = 44, C = 2 * Math.PI * R;
+  function ring(kind, level, flip) {
+    const g = uid++;
+    let art;
+    if (kind === 'case') art = `<g transform="translate(${50 - 45 * 0.92} ${50 - 57 * 0.92}) scale(0.92)">${chargingCase()}</g>`;
+    else if (kind === 'pair') art = `<g transform="translate(${50 - 29 * 0.66 - 14} ${50 - 47.5 * 0.66}) scale(0.66)">${earbud(false)}</g>
+                                     <g transform="translate(${50 - 29 * 0.66 + 14} ${50 - 47.5 * 0.66}) scale(0.66)">${earbud(true)}</g>`;
+    else art = `<g transform="translate(${50 - 29 * 0.8} ${50 - 47.5 * 0.8}) scale(0.8)">${earbud(flip)}</g>`;
+    return `<svg viewBox="0 0 100 100" aria-hidden="true">
+      <defs><linearGradient id="ring${g}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff8550"/><stop offset="1" stop-color="#ec4a10"/></linearGradient></defs>
+      <circle cx="50" cy="50" r="${R}" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="6"/>
+      <circle class="ring-fill" cx="50" cy="50" r="${R}" fill="none" stroke="url(#ring${g})" stroke-width="6" stroke-linecap="round"
+        stroke-dasharray="${C}" stroke-dashoffset="${C}" data-target="${C * (1 - level / 100)}" transform="rotate(-90 50 50)"/>
+      ${art}</svg>`;
+  }
+
+  document.querySelectorAll('[data-ring]').forEach(el => {
+    const size = +(el.dataset.size || 76);
+    const holder = document.createElement('span');
+    holder.style.cssText = `display:block;width:${size}px;height:${size}px`;
+    holder.innerHTML = ring(el.dataset.ring, +el.dataset.level, el.hasAttribute('data-flip'));
+    holder.firstElementChild.style.cssText = 'width:100%;height:100%;display:block';
+    el.prepend(holder);
+  });
+
+  const ICONS = {
+    anc: '<path d="M3 12h2M7 8v8M11 5v14M15 8v8M19 11v2" stroke-linecap="round"/><path d="M4 20 20 4" stroke-linecap="round"/>'
+  };
+  const icon = (n) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${ICONS[n]}</svg>`;
+  document.querySelectorAll('[data-icon], [data-mode-icon]').forEach(el => el.innerHTML = icon(el.dataset.icon || 'anc'));
+
+  function play(section) {
+    const desk = section.querySelector('.desk');
+    desk.classList.remove('play');
+    section.querySelectorAll('.ring-fill').forEach(c => { c.style.transition = 'none'; c.style.strokeDashoffset = C; });
+    void desk.offsetWidth;  // restart the CSS animation
+    desk.classList.add('play');
+    requestAnimationFrame(() => section.querySelectorAll('.ring-fill').forEach(c => {
+      c.style.transition = '';
+      c.style.strokeDashoffset = c.dataset.target;
+    }));
+  }
+  function centreUnderIcon(section) {
+    const desk = section.querySelector('.desk'), icon = section.querySelector('.app'), anchor = section.querySelector('.anchor');
+    const card = section.querySelector('.card');
+    const d = desk.getBoundingClientRect(), i = icon.getBoundingClientRect();
+    anchor.style.left = (i.left - d.left + i.width / 2 - card.offsetWidth / 2) + 'px';
+  }
+  const v1 = document.getElementById('v1');
+  centreUnderIcon(v1);
+  addEventListener('resize', () => centreUnderIcon(v1));
+
+  document.querySelectorAll('.option').forEach(section => {
+    section.querySelector('.replay').addEventListener('click', () => play(section));
+    play(section);
+  });
+</script>
+</body>
+</html>
