@@ -22,9 +22,12 @@ struct ConnectCardView: View {
                 RingItem(level: client.left, name: String(localized: "Left"), progress: progress(client.left)) {
                     EarbudDrawing(level: nil, showsGauge: false).frame(width: 36, height: 55)
                 }
-                RingItem(level: client.caseLevel, name: String(localized: "Case"), progress: progress(client.caseLevel)) {
+                RingItem(level: client.caseLevel,
+                         name: client.caseLevelIsStale ? String(localized: "Case · last known") : String(localized: "Case"),
+                         progress: progress(client.caseLevel)) {
                     CaseDrawing(level: nil, showsGauge: false).frame(width: 64, height: 64).offset(y: -9)
                 }
+                .opacity(client.caseLevelIsStale ? 0.55 : 1)
                 RingItem(level: client.right, name: String(localized: "Right"), progress: progress(client.right)) {
                     EarbudDrawing(level: nil, mirrored: true, showsGauge: false).frame(width: 36, height: 55)
                 }

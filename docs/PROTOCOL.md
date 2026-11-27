@@ -50,7 +50,9 @@ AA 06 <length LE16> <type> <feature ID BE16>…
 
 `type` is `01` for a read request and `02` for a reply. In a reply, each feature is `<ID BE16> <length, 1 byte> <value>`. The full status frame the earbuds push on connect parses cleanly with this rule.
 
-Battery values are 2 bytes, `<charging> <percent>`, for example `00 64`. The JBL app stores the first byte as the charging flag (`DeviceUnitBatteryInfo.setCharging`).
+Battery values are 2 bytes, `<charging> <percent>`, for example `00 64`. The JBL app stores the first byte as the charging flag (`DeviceUnitBatteryInfo.setCharging`). Tested: earbuds in the case report `01`. The case itself always reports `00`, even on a charger: the earbuds don't relay the case's charging state.
+
+The case has no radio. The earbuds relay its battery only while they are in the case; after they leave, they keep reporting the last value.
 
 ## Read commands (tested)
 
@@ -100,14 +102,35 @@ AA 91 09 22  01 01  04 07  05 01  A1 06
 
 The JBL app shows 7 Ambient Aware steps. The earbuds accepted 3 and 6; they ignored 7, so the range is 0–6.
 
-### Sound effect
+### Music EQ
 
-Feature `0x14` in the feature-list frames (`SoundEffectInfo`): value `<status> <type>`, type `00` Natural, `01` Treble Boost, `02` Bass Boost.
+`EQCmd`, command `0xA2`, with a **2-byte little-endian length** (like `0x06`). The earbuds don't take a preset name: every EQ is sent as a full list of biquad filters.
 
-| Change | Sent |
+Read with `AA A2 02 01 <category>`. Categories: `FF` the current EQ, `CA` (202) the earbuds' own tuning ("design EQ"), `C9` (201) the Personi-Fi EQ. Preset categories: `00` off, `01` Jazz, `02` Vocal, `03` Bass, `E6` (230) custom.
+
+```
+AA A2 <len LE16> <sub> <category> <calibration f32> <sample rate> <left gain f32> <right gain f32> <band count>
+                 then per band: <type> <gain f32> <frequency f32> <Q>
+```
+
+- `sub`: `02` reply, `03` set with Q × 10 (what the app sends for this model), `04` reply with Q × 10. Floats are little-endian.
+- Band type `01` is peaking, `02` high shelf. Sample rate is `30` (48 kHz).
+- A preset is 10 peaking bands at 32, 64, 125, 250, 500, 1k, 2k, 4k, 8k and 16k Hz, Q 1, with the gains from the app's `assets/CommonPreset.json`:
+
+| Preset | Gains (dB) |
 |---|---|
-| Read | `AA 06 03 00 01 00 14` → `AA 06 06 00 02 00 14 02 00 00` |
-| Treble Boost | `AA 06 06 00 00 00 14 02 01 01` (status `01`, as the JBL app sends) |
+| Off | all 0 |
+| Jazz | 4, 3, 1, 2.5, −1.5, −1.5, 0, 1, 3, 4 |
+| Vocal | −1.5, −3, −3, 1, 3.5, 3.5, 3, 1.5, 0, −1.5 |
+| Bass | 6, 4, 3, 2.5, 0.5, 0, 0, 0, 0, 0 |
+
+**Calibration** is a pre-gain the app computes natively (`EqCalibration` in `libnative-peq.so`). It is the peak of the combined magnitude response of the design EQ plus the chosen EQ (RBJ cookbook biquads at 48 kHz, 20 Hz–20 kHz), in dB, plus 1 dB. For Jazz this gives 11.553, the value the earbuds report. FlexBar computes it the same way, reading the design EQ from the earbuds on each connection.
+
+Tested: Vocal was sent, read back as category `02`, then Jazz restored.
+
+### Call voice tone (not used by FlexBar)
+
+Feature `0x14` in the feature-list frames (`SoundEffectInfo`, the app's "Sound Setting" card): value `<status> <type>`, type `00` Natural, `01` Treble Boost, `02` Bass Boost. Despite the name, the JBL app describes it as adjusting "the tone of the voice of the person at the other end of the phone", so it only affects calls. Set with `AA 06 06 00 00 00 14 02 01 <type>`.
 
 ### Smart Audio & Video
 
@@ -128,6 +151,6 @@ The three profiles come from the JBL app's product list for the Tune Flex 2.
 
 ## Not implemented yet: where to look in the app
 
-- Custom EQ: `TuneFlex2Control.setEQSettings2` → `EQControl` (`QMultiply10EQ`). Gain range ±6 dB.
+- Custom EQ curves: the same `AA A2` frame with category `E6` (230) and your own gains (±6 dB in the JBL app).
 - Touch controls: `customizedGesture` in `product_list.json`, `CommandHeader.HEADER_FOR_SET_GESTURE_CONTROL` (`AA 71`).
 - Other settings, all in `TuneFlex2Control`: `getAudioLimiterStatus`, `getAutoStandbyModeList`, `getLRBalanceStatus`, `getFindMyBuds`, `getInEarStatus`.

@@ -47,8 +47,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             .sink { l, r, c in print("battery: L \(l?.percent ?? -1) R \(r?.percent ?? -1) case \(c?.percent ?? -1)") }
             .store(in: &logSubscriptions)
         client.$firmware.sink { print("firmware:", $0 ?? "-") }.store(in: &logSubscriptions)
-        client.$adaptiveANC.combineLatest(client.$ambientLevel, client.$soundEffect, client.$smartAV)
-            .sink { a, l, e, s in print("settings: adaptive \(a.map(String.init) ?? "-") ambient \(l.map(String.init) ?? "-") effect \(e.map { "\($0)" } ?? "-") smartAV \(s.map { "\($0)" } ?? "-")") }
+        client.$adaptiveANC.combineLatest(client.$ambientLevel, client.$eqCategory, client.$smartAV)
+            .sink { a, l, e, s in print("settings: adaptive \(a.map(String.init) ?? "-") ambient \(l.map(String.init) ?? "-") eq \(e.map(String.init) ?? "-") smartAV \(s.map { "\($0)" } ?? "-")") }
             .store(in: &logSubscriptions)
         client.$beeping.sink { print("beeping: L \($0.left) R \($0.right)") }.store(in: &logSubscriptions)
         client.$lastError.sink { if let e = $0 { print("error:", e) } }.store(in: &logSubscriptions)

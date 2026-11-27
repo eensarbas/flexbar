@@ -8,7 +8,7 @@ JBL Tune Flex 2 için macOS menü çubuğu uygulaması. JBL'nin telefon uygulama
 
 - Sol, sağ ve kutu pili.
 - Mod ayrıntıları: uyarlanabilir gürültü engellemeyi açıp kapatma, Ambient Aware seviyesi (7 kademe).
-- Ses efekti: Doğal, Tiz veya Bas.
+- EQ: Kapalı, Caz, Vokal veya Bas (JBL uygulamasının hazır ayarları).
 - Smart Audio & Video: Normal, Müzik (daha yüksek kalite) veya Video (görüntü ve görüşmeler için daha az gecikme).
 - Kulaklığı bul: sol ya da sağ kulaklığı öttürme.
 - Düşük pil bildirimi: bir kulaklık %20'ye ve sonra %10'a inince bildirim. Dişli menüsünden kapatılabilir.

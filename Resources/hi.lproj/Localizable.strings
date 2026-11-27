@@ -23,6 +23,9 @@
 "Right" = "दायाँ";
 "Case" = "केस";
 "%@ battery: %@" = "%1$@ बैटरी: %2$@";
+"%@ · last known" = "%@ · आख़िरी जानकारी";
+"Case · last known" = "केस · आख़िरी जानकारी";
+"The case battery updates while the earbuds are in the case." = "केस की बैटरी तब अपडेट होती है जब ईयरबड्स केस में हों।";
 "unknown" = "अज्ञात";
 "Firmware %@" = "फ़र्मवेयर %@";
 "Refresh" = "रीफ़्रेश करें";
@@ -34,10 +37,11 @@
 "Adaptive Noise Cancelling" = "अडैप्टिव नॉइज़ कैंसलिंग";
 "Adjusts to the noise around you." = "आसपास के शोर के हिसाब से बदलता है।";
 "Ambient Aware level" = "Ambient Aware लेवल";
-"Sound" = "साउंड";
-"Natural" = "नेचुरल";
-"Treble Boost" = "ट्रेबल";
-"Bass Boost" = "बेस";
+"EQ" = "EQ";
+"Jazz" = "जैज़";
+"Vocal" = "वोकल";
+"Bass" = "बेस";
+"A custom EQ from the JBL app is active." = "JBL ऐप का कस्टम EQ चालू है।";
 "Smart Audio & Video" = "Smart Audio & Video";
 "Normal" = "नॉर्मल";
 "Audio" = "ऑडियो";
@@ -45,6 +49,9 @@
 "Balanced quality and latency." = "क्वालिटी और लेटेंसी में संतुलन।";
 "Higher quality for music." = "संगीत के लिए बेहतर क्वालिटी।";
 "Lower latency for video and calls." = "वीडियो और कॉल के लिए कम लेटेंसी।";
+"Changing it reconnects the earbuds for a few seconds." = "इसे बदलने पर ईयरबड्स कुछ सेकंड के लिए फिर से कनेक्ट होते हैं।";
+"Applying Smart Audio & Video…" = "Smart Audio & Video लागू हो रहा है…";
+"The earbuds reconnect for a few seconds to switch profiles." = "प्रोफ़ाइल बदलने के लिए ईयरबड्स कुछ सेकंड के लिए फिर से कनेक्ट हो रहे हैं।";
 "Find My Buds" = "ईयरबड्स खोजें";
 "Take the earbuds out first: the beep is loud." = "पहले ईयरबड्स निकाल लें: आवाज़ तेज़ है।";
 "Stop" = "रोकें";

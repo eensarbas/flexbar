@@ -81,9 +81,25 @@ final class FlexClient: NSObject, ObservableObject {
     @Published private(set) var adaptiveANC: Bool?
     /// Ambient Aware strength, 0...6 (only applies in Ambient Aware mode).
     @Published private(set) var ambientLevel: Int?
-    @Published private(set) var soundEffect: SoundEffect?
+    /// EQ category the earbuds report: 0...3 are FlexBar's presets; other values were set elsewhere (JBL app).
+    @Published private(set) var eqCategory: UInt8?
     @Published private(set) var smartAV: SmartAVMode?
     @Published private(set) var beeping = BeepState()
+    /// When Smart Audio & Video was last changed. The earbuds reconnect to apply a new profile
+    /// (the JBL app waits up to 30 s for this too), so the UI treats that reconnect differently.
+    @Published private(set) var smartAVChangedAt: Date?
+
+    /// The case has no radio: the earbuds relay its battery only while they sit in it, and keep the last value
+    /// once they leave. Charging earbuds are in the case, so without that the case value is probably stale.
+    /// (Earbuds that are full may stop charging while still in the case; then this reports stale too.)
+    var caseLevelIsStale: Bool {
+        caseLevel != nil && left?.charging != true && right?.charging != true
+    }
+
+    /// True while the earbuds are likely reconnecting because of a Smart Audio & Video change.
+    var isApplyingSmartAV: Bool {
+        smartAVChangedAt.map { Date().timeIntervalSince($0) < 30 } ?? false
+    }
 
     static let serviceUUID = CBUUID(string: "65786365-6c70-6f69-6e74-2e636f6d0000")
     static let txUUID = CBUUID(string: "65786365-6c70-6f69-6e74-2e636f6d0002")
@@ -94,9 +110,10 @@ final class FlexClient: NSObject, ObservableObject {
     private static let queryAdvancedANC: [UInt8] = [0xAA, 0x91, 0x01, 0x21]
     private static let querySmartAV: [UInt8] = [0xAA, 0x80, 0x01, 0x01]
     private static let queryBeeping: [UInt8] = [0xAA, 0x23, 0x01, 0x01]
-    // Features 0x1A (left), 0x1B (right), 0x1C (case), 0x05 (firmware), 0x14 (sound effect).
-    private static let queryStatus: [UInt8] = [0xAA, 0x06, 0x0B, 0x00, 0x01,
-                                               0x00, 0x1A, 0x00, 0x1B, 0x00, 0x1C, 0x00, 0x05, 0x00, 0x14]
+    private static let queryEQ: [UInt8] = [0xAA, 0xA2, 0x02, 0x01, 0xFF]        // current EQ
+    private static let queryDesignEQ: [UInt8] = [0xAA, 0xA2, 0x02, 0x01, 0xCA]  // the earbuds' own tuning (202)
+    // Features 0x1A (left), 0x1B (right), 0x1C (case), 0x05 (firmware).
+    private static let queryStatus: [UInt8] = [0xAA, 0x06, 0x09, 0x00, 0x01, 0x00, 0x1A, 0x00, 0x1B, 0x00, 0x1C, 0x00, 0x05]
 
     private var central: CBCentralManager!
     private var peripheral: CBPeripheral?
@@ -104,6 +121,8 @@ final class FlexClient: NSObject, ObservableObject {
     private var buffer: [UInt8] = []
     private var statusTimer: Timer?
     private var pendingTimeout: DispatchWorkItem?
+    /// The earbuds' own tuning, needed to compute the EQ calibration.
+    private var designEQ: [EQFilter]?
 
     override init() {
         super.init()
@@ -141,7 +160,9 @@ final class FlexClient: NSObject, ObservableObject {
 
     func refresh() {
         guard state == .connected, let peripheral, let tx else { return }
-        for query in [Self.queryMode, Self.queryAdvancedANC, Self.queryStatus, Self.querySmartAV, Self.queryBeeping] {
+        var queries = [Self.queryMode, Self.queryAdvancedANC, Self.queryStatus, Self.querySmartAV, Self.queryBeeping, Self.queryEQ]
+        if designEQ == nil { queries.append(Self.queryDesignEQ) }
+        for query in queries {
             write(query, to: peripheral, tx)
         }
     }
@@ -156,9 +177,12 @@ final class FlexClient: NSObject, ObservableObject {
         send([0xAA, 0x91, 0x03, 0x20, 0xA1, UInt8(level)])
     }
 
-    func setSoundEffect(_ effect: SoundEffect) { send(effect.command) }
+    func setEQ(_ preset: EQPreset) { send(preset.command(design: designEQ ?? EQMath.fallbackDesign)) }
 
-    func setSmartAV(_ mode: SmartAVMode) { send(mode.command) }
+    func setSmartAV(_ mode: SmartAVMode) {
+        smartAVChangedAt = Date()
+        send(mode.command)
+    }
 
     /// Starts or stops the beep on each earbud; nil leaves that side as it is.
     func beep(left: Bool?, right: Bool?) { send(BeepState.command(left: left, right: right)) }
@@ -203,7 +227,8 @@ final class FlexClient: NSObject, ObservableObject {
         pendingMode = nil
         adaptiveANC = nil
         ambientLevel = nil
-        soundEffect = nil
+        eqCategory = nil
+        designEQ = nil
         smartAV = nil
         beeping = BeepState()
         left = nil
@@ -223,7 +248,7 @@ final class FlexClient: NSObject, ObservableObject {
         while buffer.count >= 3 {
             guard buffer[0] == 0xAA else { buffer.removeAll(); return }
             let total: Int
-            if buffer[1] == 0x06 {
+            if buffer[1] == 0x06 || buffer[1] == 0xA2 {  // these two use a 2-byte length
                 guard buffer.count >= 4 else { return }
                 total = 4 + (Int(buffer[2]) | Int(buffer[3]) << 8)
             } else {
@@ -246,6 +271,8 @@ final class FlexClient: NSObject, ObservableObject {
             // AA 80 09 02 <aac LE16> <sbc LE16> <latency LE16> <latency2 LE16>
             let u16 = { (i: Int) in UInt16(f[i]) | UInt16(f[i + 1]) << 8 }
             smartAV = SmartAVMode(aac: u16(4), sbc: u16(6), latency: u16(8))
+        case 0xA2 where f.count >= 6 && (f[4] == 0x02 || f[4] == 0x04):
+            parseEQ(f)
         case 0x23 where f.count >= 6 && f[3] == 0x02:
             // AA 23 03 02 <left> <right>, 1 = beeping
             beeping = BeepState(left: f[4] == 1, right: f[5] == 1)
@@ -282,6 +309,28 @@ final class FlexClient: NSObject, ObservableObject {
         }
     }
 
+    /// AA A2 <len LE16> <02 | 04 (Q × 10)> <category> <calibration f32> <rate> <gains f32 ×2> <count>
+    ///   then per band: <type> <gain f32> <frequency f32> <Q>
+    private func parseEQ(_ f: [UInt8]) {
+        let category = f[5]
+        if category == 202 {
+            guard f.count >= 20 else { return }
+            let count = Int(f[19]), qScale = f[4] == 0x04 ? 10.0 : 1.0
+            func f32(_ i: Int) -> Double {
+                Double(Float(bitPattern: UInt32(f[i]) | UInt32(f[i + 1]) << 8 | UInt32(f[i + 2]) << 16 | UInt32(f[i + 3]) << 24))
+            }
+            var filters: [EQFilter] = []
+            for n in 0..<count {
+                let o = 20 + n * 10
+                guard o + 10 <= f.count else { return }
+                filters.append(EQFilter(type: f[o], gain: f32(o + 1), frequency: f32(o + 5), q: Double(f[o + 9]) / qScale))
+            }
+            if !filters.isEmpty { designEQ = filters }
+        } else if category < 200 || category == 230 {
+            eqCategory = category
+        }
+    }
+
     /// AA 91 <len> 22 (<key> <value>)...: 01 adaptive ANC on/off, A1 Ambient Aware level.
     private func parseAdvancedANC(_ f: [UInt8]) {
         var i = 4
@@ -311,7 +360,6 @@ final class FlexClient: NSObject, ObservableObject {
             case 0x1B: right = battery(value)
             case 0x1C: caseLevel = battery(value)
             case 0x05 where !value.isEmpty: firmware = value.map(String.init).joined(separator: ".")
-            case 0x14 where value.count >= 2: soundEffect = SoundEffect(rawValue: value[1])
             default: break
             }
         }

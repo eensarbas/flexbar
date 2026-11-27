@@ -23,6 +23,9 @@
 "Right" = "Droite";
 "Case" = "Boîtier";
 "%@ battery: %@" = "Batterie %1$@ : %2$@";
+"%@ · last known" = "%@ · dernière valeur";
+"Case · last known" = "Boîtier · dernière valeur";
+"The case battery updates while the earbuds are in the case." = "La batterie du boîtier se met à jour quand les écouteurs y sont rangés.";
 "unknown" = "inconnue";
 "Firmware %@" = "Firmware %@";
 "Refresh" = "Actualiser";
@@ -34,10 +37,11 @@
 "Adaptive Noise Cancelling" = "Réduction de bruit adaptative";
 "Adjusts to the noise around you." = "S’adapte au bruit ambiant.";
 "Ambient Aware level" = "Niveau Ambient Aware";
-"Sound" = "Son";
-"Natural" = "Naturel";
-"Treble Boost" = "Aigus";
-"Bass Boost" = "Basses";
+"EQ" = "Égaliseur";
+"Jazz" = "Jazz";
+"Vocal" = "Voix";
+"Bass" = "Basses";
+"A custom EQ from the JBL app is active." = "Un égaliseur personnalisé de l’app JBL est actif.";
 "Smart Audio & Video" = "Smart Audio & Video";
 "Normal" = "Normal";
 "Audio" = "Audio";
@@ -45,6 +49,9 @@
 "Balanced quality and latency." = "Qualité et latence équilibrées.";
 "Higher quality for music." = "Meilleure qualité pour la musique.";
 "Lower latency for video and calls." = "Latence réduite pour les vidéos et les appels.";
+"Changing it reconnects the earbuds for a few seconds." = "Le changement reconnecte les écouteurs pendant quelques secondes.";
+"Applying Smart Audio & Video…" = "Application de Smart Audio & Video…";
+"The earbuds reconnect for a few seconds to switch profiles." = "Les écouteurs se reconnectent quelques secondes pour changer de profil.";
 "Find My Buds" = "Localiser les écouteurs";
 "Take the earbuds out first: the beep is loud." = "Retirez d’abord les écouteurs : le son est fort.";
 "Stop" = "Arrêter";

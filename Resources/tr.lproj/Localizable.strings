@@ -23,6 +23,9 @@
 "Right" = "Sağ";
 "Case" = "Kutu";
 "%@ battery: %@" = "%1$@ pil: %2$@";
+"%@ · last known" = "%@ · son bilinen";
+"Case · last known" = "Kutu · son bilinen";
+"The case battery updates while the earbuds are in the case." = "Kutu pili, kulaklıklar kutudayken güncellenir.";
 "unknown" = "bilinmiyor";
 "Firmware %@" = "Firmware %@";
 "Refresh" = "Yenile";
@@ -34,10 +37,11 @@
 "Adaptive Noise Cancelling" = "Uyarlanabilir Gürültü Engelleme";
 "Adjusts to the noise around you." = "Çevrendeki gürültüye göre ayarlanır.";
 "Ambient Aware level" = "Ambient Aware seviyesi";
-"Sound" = "Ses";
-"Natural" = "Doğal";
-"Treble Boost" = "Tiz";
-"Bass Boost" = "Bas";
+"EQ" = "EQ";
+"Jazz" = "Caz";
+"Vocal" = "Vokal";
+"Bass" = "Bas";
+"A custom EQ from the JBL app is active." = "JBL uygulamasından özel bir EQ etkin.";
 "Smart Audio & Video" = "Smart Audio & Video";
 "Normal" = "Normal";
 "Audio" = "Müzik";
@@ -45,6 +49,9 @@
 "Balanced quality and latency." = "Kalite ve gecikme dengeli.";
 "Higher quality for music." = "Müzik için daha yüksek kalite.";
 "Lower latency for video and calls." = "Video ve görüşmeler için daha az gecikme.";
+"Changing it reconnects the earbuds for a few seconds." = "Değiştirince kulaklık birkaç saniyeliğine yeniden bağlanır.";
+"Applying Smart Audio & Video…" = "Smart Audio & Video uygulanıyor…";
+"The earbuds reconnect for a few seconds to switch profiles." = "Kulaklık profili değiştirmek için birkaç saniyeliğine yeniden bağlanıyor.";
 "Find My Buds" = "Kulaklığı bul";
 "Take the earbuds out first: the beep is loud." = "Önce kulaklıkları çıkar: ses yüksek.";
 "Stop" = "Durdur";

@@ -24,7 +24,7 @@ struct PanelView: View {
                 ModeDetail(client: client)
                 SoundSettings(client: client)
             } else {
-                DisconnectedView(state: client.state)
+                DisconnectedView(state: client.state, applyingSmartAV: client.isApplyingSmartAV)
             }
             if let error = client.lastError {
                 Label(error, systemImage: "exclamationmark.triangle")
@@ -44,13 +44,14 @@ private struct BatteryStage: View {
     var body: some View {
         HStack(alignment: .bottom, spacing: 6) {
             item(EarbudDrawing(level: client.left?.percent).frame(width: 58), client.left, String(localized: "Left"))
-            item(CaseDrawing(level: client.caseLevel?.percent).frame(width: 86), client.caseLevel, String(localized: "Case"))
+            item(CaseDrawing(level: client.caseLevel?.percent).frame(width: 86), client.caseLevel, String(localized: "Case"),
+                 stale: client.caseLevelIsStale)
             item(EarbudDrawing(level: client.right?.percent, mirrored: true).frame(width: 58), client.right, String(localized: "Right"))
         }
         .padding(.top, 4)
     }
 
-    private func item(_ drawing: some View, _ level: BatteryLevel?, _ name: String) -> some View {
+    private func item(_ drawing: some View, _ level: BatteryLevel?, _ name: String, stale: Bool = false) -> some View {
         VStack(spacing: 2) {
             drawing.frame(height: 86)
             HStack(spacing: 2) {
@@ -61,8 +62,10 @@ private struct BatteryStage: View {
                     Image(systemName: "bolt.fill").font(.caption2).foregroundStyle(Color.flexOrange)
                 }
             }
-            Text(name).font(.caption2).foregroundStyle(.secondary)
+            Text(stale ? String(localized: "\(name) · last known") : name).font(.caption2).foregroundStyle(.secondary)
         }
+        .opacity(stale ? 0.55 : 1)
+        .help(stale ? String(localized: "The case battery updates while the earbuds are in the case.") : "")
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(String(localized: "\(name) battery: \(level.map { percentText($0.percent) } ?? String(localized: "unknown"))"))
@@ -128,6 +131,7 @@ private struct ModeTile: View {
 
 private struct DisconnectedView: View {
     let state: FlexClient.State
+    var applyingSmartAV = false
 
     var body: some View {
         VStack(spacing: 8) {
@@ -150,6 +154,9 @@ private struct DisconnectedView: View {
     }
 
     private var message: String {
+        if applyingSmartAV && (state == .searching || state == .connecting) {
+            return String(localized: "Applying Smart Audio & Video…")
+        }
         switch state {
         case .bluetoothOff: return String(localized: "Bluetooth is off")
         case .unauthorized: return String(localized: "No Bluetooth permission")
@@ -159,6 +166,9 @@ private struct DisconnectedView: View {
     }
 
     private var hint: String {
+        if applyingSmartAV && (state == .searching || state == .connecting) {
+            return String(localized: "The earbuds reconnect for a few seconds to switch profiles.")
+        }
         switch state {
         case .bluetoothOff: return String(localized: "Turn on Bluetooth in Control Center.")
         case .unauthorized: return String(localized: "Allow FlexBar under Privacy & Security › Bluetooth.")
@@ -262,18 +272,21 @@ private struct ModeDetail: View {
     }
 }
 
-/// Sound effect, Smart Audio & Video and Find My Buds.
+/// EQ, Smart Audio & Video and Find My Buds.
 private struct SoundSettings: View {
     @ObservedObject var client: FlexClient
 
     var body: some View {
         VStack(spacing: 6) {
-            if let effect = client.soundEffect {
+            if let category = client.eqCategory {
                 SettingRow {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("Sound")
-                        Segmented(options: SoundEffect.allCases, selection: effect, title: \.title) {
-                            client.setSoundEffect($0)
+                        Text("EQ")
+                        Segmented(options: EQPreset.allCases, selection: EQPreset(rawValue: category), title: \.title) {
+                            client.setEQ($0)
+                        }
+                        if EQPreset(rawValue: category) == nil {
+                            Text("A custom EQ from the JBL app is active.").font(.system(size: 11)).foregroundStyle(.secondary)
                         }
                     }
                 }
@@ -285,7 +298,9 @@ private struct SoundSettings: View {
                         Segmented(options: SmartAVMode.allCases, selection: smartAV, title: \.title) {
                             client.setSmartAV($0)
                         }
-                        Text(smartAV.summary).font(.system(size: 11)).foregroundStyle(.secondary)
+                        Text("\(smartAV.summary) \(String(localized: "Changing it reconnects the earbuds for a few seconds."))")
+                            .font(.system(size: 11)).foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
             }
@@ -330,7 +345,7 @@ private struct BeepButton: View {
 /// (The system segmented control doesn't match the panel and doesn't render in snapshots.)
 private struct Segmented<Option: Hashable>: View {
     let options: [Option]
-    let selection: Option
+    let selection: Option?
     let title: KeyPath<Option, String>
     let onSelect: (Option) -> Void
 

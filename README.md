@@ -16,7 +16,7 @@ JBL's own app only runs on phones. FlexBar talks to the earbuds directly over Bl
 - **Battery** for the left earbud, right earbud and case, refreshed every minute.
 - **Noise mode:** Noise Cancelling, Ambient Aware, TalkThru or Off. A mode is only shown as active once the earbuds confirm it. If they don't confirm within 3 seconds, the panel says so.
 - **Noise mode details:** adaptive noise cancelling on or off, and the Ambient Aware level (7 steps).
-- **Sound effect:** Natural, Treble Boost or Bass Boost.
+- **EQ:** Off, Jazz, Vocal or Bass, the JBL app's presets.
 - **Smart Audio & Video:** Normal, Audio (higher quality for music) or Video (lower latency for video and calls).
 - **Find My Buds:** make the left or right earbud beep.
 - **Low battery alerts:** a notification when an earbud reaches 20% and again at 10%. Can be turned off in the gear menu.

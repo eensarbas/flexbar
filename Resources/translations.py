@@ -40,6 +40,9 @@ STRINGS = {
     "Right": ["Right", "Sağ", "दायाँ", "Rechts", "Droite", "Direito"],
     "Case": ["Case", "Kutu", "केस", "Case", "Boîtier", "Estojo"],
     "%@ battery: %@": ["%1$@ battery: %2$@", "%1$@ pil: %2$@", "%1$@ बैटरी: %2$@", "%1$@ Akku: %2$@", "Batterie %1$@ : %2$@", "Bateria %1$@: %2$@"],
+    "%@ · last known": ["%@ · last known", "%@ · son bilinen", "%@ · आख़िरी जानकारी", "%@ · zuletzt bekannt", "%@ · dernière valeur", "%@ · último valor"],
+    "Case · last known": ["Case · last known", "Kutu · son bilinen", "केस · आख़िरी जानकारी", "Case · zuletzt bekannt", "Boîtier · dernière valeur", "Estojo · último valor"],
+    "The case battery updates while the earbuds are in the case.": ["The case battery updates while the earbuds are in the case.", "Kutu pili, kulaklıklar kutudayken güncellenir.", "केस की बैटरी तब अपडेट होती है जब ईयरबड्स केस में हों।", "Der Akkustand des Case wird aktualisiert, solange die Ohrhörer darin liegen.", "La batterie du boîtier se met à jour quand les écouteurs y sont rangés.", "A bateria do estojo é atualizada enquanto os fones estão nele."],
     "unknown": ["unknown", "bilinmiyor", "अज्ञात", "unbekannt", "inconnue", "desconhecida"],
     "Firmware %@": ["Firmware %@", "Firmware %@", "फ़र्मवेयर %@", "Firmware %@", "Firmware %@", "Firmware %@"],
     "Refresh": ["Refresh", "Yenile", "रीफ़्रेश करें", "Aktualisieren", "Actualiser", "Atualizar"],
@@ -54,11 +57,12 @@ STRINGS = {
     "Adjusts to the noise around you.": ["Adjusts to the noise around you.", "Çevrendeki gürültüye göre ayarlanır.", "आसपास के शोर के हिसाब से बदलता है।", "Passt sich an die Umgebungsgeräusche an.", "S’adapte au bruit ambiant.", "Ajusta-se ao ruído ao seu redor."],
     "Ambient Aware level": ["Ambient Aware level", "Ambient Aware seviyesi", "Ambient Aware लेवल", "Ambient-Aware-Stufe", "Niveau Ambient Aware", "Nível do Ambient Aware"],
 
-    # Sound effect (short: they sit side by side in a segmented control)
-    "Sound": ["Sound", "Ses", "साउंड", "Klang", "Son", "Som"],
-    "Natural": ["Natural", "Doğal", "नेचुरल", "Natürlich", "Naturel", "Natural"],
-    "Treble Boost": ["Treble Boost", "Tiz", "ट्रेबल", "Höhen", "Aigus", "Agudos"],
-    "Bass Boost": ["Bass Boost", "Bas", "बेस", "Bässe", "Basses", "Graves"],
+    # Music EQ (short: they sit side by side in a segmented control)
+    "EQ": ["EQ", "EQ", "EQ", "EQ", "Égaliseur", "Equalizador"],
+    "Jazz": ["Jazz", "Caz", "जैज़", "Jazz", "Jazz", "Jazz"],
+    "Vocal": ["Vocal", "Vokal", "वोकल", "Gesang", "Voix", "Vocal"],
+    "Bass": ["Bass", "Bas", "बेस", "Bass", "Basses", "Graves"],
+    "A custom EQ from the JBL app is active.": ["A custom EQ from the JBL app is active.", "JBL uygulamasından özel bir EQ etkin.", "JBL ऐप का कस्टम EQ चालू है।", "Ein eigener EQ aus der JBL-App ist aktiv.", "Un égaliseur personnalisé de l’app JBL est actif.", "Um EQ personalizado do app JBL está ativo."],
 
     # Smart Audio & Video ("Smart Audio & Video" is a JBL feature name)
     "Smart Audio & Video": ["Smart Audio & Video"] * 6,
@@ -68,6 +72,10 @@ STRINGS = {
     "Balanced quality and latency.": ["Balanced quality and latency.", "Kalite ve gecikme dengeli.", "क्वालिटी और लेटेंसी में संतुलन।", "Ausgewogene Qualität und Latenz.", "Qualité et latence équilibrées.", "Qualidade e latência equilibradas."],
     "Higher quality for music.": ["Higher quality for music.", "Müzik için daha yüksek kalite.", "संगीत के लिए बेहतर क्वालिटी।", "Höhere Qualität für Musik.", "Meilleure qualité pour la musique.", "Mais qualidade para música."],
     "Lower latency for video and calls.": ["Lower latency for video and calls.", "Video ve görüşmeler için daha az gecikme.", "वीडियो और कॉल के लिए कम लेटेंसी।", "Geringere Latenz für Videos und Anrufe.", "Latence réduite pour les vidéos et les appels.", "Menos latência para vídeos e chamadas."],
+
+    "Changing it reconnects the earbuds for a few seconds.": ["Changing it reconnects the earbuds for a few seconds.", "Değiştirince kulaklık birkaç saniyeliğine yeniden bağlanır.", "इसे बदलने पर ईयरबड्स कुछ सेकंड के लिए फिर से कनेक्ट होते हैं।", "Beim Wechsel verbinden sich die Ohrhörer für ein paar Sekunden neu.", "Le changement reconnecte les écouteurs pendant quelques secondes.", "Ao mudar, os fones se reconectam por alguns segundos."],
+    "Applying Smart Audio & Video…": ["Applying Smart Audio & Video…", "Smart Audio & Video uygulanıyor…", "Smart Audio & Video लागू हो रहा है…", "Smart Audio & Video wird angewendet …", "Application de Smart Audio & Video…", "Aplicando Smart Audio & Video…"],
+    "The earbuds reconnect for a few seconds to switch profiles.": ["The earbuds reconnect for a few seconds to switch profiles.", "Kulaklık profili değiştirmek için birkaç saniyeliğine yeniden bağlanıyor.", "प्रोफ़ाइल बदलने के लिए ईयरबड्स कुछ सेकंड के लिए फिर से कनेक्ट हो रहे हैं।", "Die Ohrhörer verbinden sich kurz neu, um das Profil zu wechseln.", "Les écouteurs se reconnectent quelques secondes pour changer de profil.", "Os fones estão se reconectando por alguns segundos para trocar de perfil."],
 
     # Find My Buds
     "Find My Buds": ["Find My Buds", "Kulaklığı bul", "ईयरबड्स खोजें", "Ohrhörer finden", "Localiser les écouteurs", "Encontrar fones"],
