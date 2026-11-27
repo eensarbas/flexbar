@@ -7,6 +7,11 @@ JBL Tune Flex 2 için macOS menü çubuğu uygulaması. JBL'nin telefon uygulama
 ## Özellikler
 
 - Sol, sağ ve kutu pili.
+- Mod ayrıntıları: uyarlanabilir gürültü engellemeyi açıp kapatma, Ambient Aware seviyesi (7 kademe).
+- EQ: Kapalı, Caz, Vokal veya Bas (JBL uygulamasının hazır ayarları).
+- Smart Audio & Video: Normal, Müzik (daha yüksek kalite) veya Video (görüntü ve görüşmeler için daha az gecikme).
+- Kulaklığı bul: sol ya da sağ kulaklığı öttürme.
+- Düşük pil bildirimi: bir kulaklık %20'ye ve sonra %10'a inince bildirim. Dişli menüsünden kapatılabilir.
 - Bağlantı kartı: kulaklık her bağlandığında menü çubuğu ikonunun altında 4 saniyeliğine açılır. Sol, kutu ve sağ pil halkalarında görünür, altta etkin gürültü modu yazar. Karta tıklamak paneli açar. `flexbar://card` kartı elle gösterir.
 - Gürültü modu: Gürültü Engelleme, Ambient Aware, TalkThru, Kapalı. Seçilen mod, kulaklık onaylayınca işaretlenir. Onay 3 saniye içinde gelmezse menüde uyarı görünür.
 - Menü çubuğu ikonu etkin modu gösterir. Kulaklık bağlı değilken soluk kulaklık ikonu görünür.
@@ -74,9 +79,8 @@ Paneli PNG olarak kaydetmek için `--snapshot /tmp/panel.png` ekle. Kulaklıktan
 ## Bilinen sınırlar
 
 - Yalnızca JBL Tune Flex 2 ile denendi. Uygulama, adı `JBL Tune Flex 2` ile başlayan BLE cihazına bağlanır.
-- Pil değerinin ilk baytını şarj durumu sayıyorum (⚡︎ işareti). Bu henüz doğrulanmadı.
 - FlexBar bağlıyken telefondaki JBL uygulaması kulaklığa bağlanamayabilir.
-- EQ, dokunmatik kontroller ve diğer ayarlar henüz yok. Komutlar JBL uygulamasının kodunda duruyor, çıkarılması gerekiyor.
+- Kendi EQ eğrin, dokunmatik kontroller ve diğer ayarlar henüz yok. Komutlar JBL uygulamasının kodunda duruyor, çıkarılması gerekiyor.
 
 ## Sorumluluk reddi
 

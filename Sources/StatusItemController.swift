@@ -47,6 +47,8 @@ final class StatusItemController: NSObject {
             .sink { [weak self] left, right, caseLevel in
                 guard let self, self.awaitingCard, left != nil, right != nil, caseLevel != nil else { return }
                 self.awaitingCard = false
+                // Not a new connection: the earbuds reconnected to apply a Smart Audio & Video profile.
+                if let changed = self.client.smartAVChangedAt, Date().timeIntervalSince(changed) < 60 { return }
                 self.showCard()
             }
             .store(in: &subscriptions)
